@@ -5,9 +5,10 @@
   "type": "module",
   "description": "Static, client-side viewer for repo-wiki-standard documentation with rendered Mermaid diagrams.",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "dev": "npm run wiki:manifest && vite",
+    "build": "npm run wiki:manifest && tsc --noEmit && vite build",
     "preview": "vite preview",
+    "wiki:manifest": "node scripts/build-wiki-manifest.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run"
