@@ -1,0 +1,23 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+
+# Build artifacts
+*.tsbuildinfo
+vite.config.ts.timestamp-*.mjs
+
+# Generated bundled-docs manifest
+public/wiki/index.json
+
+# Editor
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
