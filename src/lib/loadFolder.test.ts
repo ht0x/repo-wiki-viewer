@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { loadFromInput } from "./loadFolder";
 
-// Minimal File stub — the code only reads `.text()` and the injected
-// `webkitRelativePath`. jsdom/Node's File may not carry webkitRelativePath,
-// so we build a small compatible object.
 function mkFile(relPath: string, content: string): File {
   const name = relPath.split("/").pop() ?? relPath;
   return {
@@ -58,10 +55,7 @@ describe("loadFromInput — root stripping", () => {
 
   it("does not strip when roots differ", async () => {
     const map = await loadFromInput(
-      mkFileList([
-        mkFile("a/home.md", "# A"),
-        mkFile("b/home.md", "# B"),
-      ]),
+      mkFileList([mkFile("a/home.md", "# A"), mkFile("b/home.md", "# B")]),
     );
     expect([...map.keys()].sort()).toEqual(["a/home.md", "b/home.md"]);
   });
