@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: CD
 
 # Runs only after the CI workflow completes on main, so we never deploy
 # a build that failed type-check or tests. Also runnable manually.
