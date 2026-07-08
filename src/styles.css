@@ -467,14 +467,88 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--bg-subtle);
-  padding: 22px;
+  padding: 12px;
   margin: 0 0 20px;
-  overflow-x: auto;
   text-align: center;
 }
-.mermaid-box svg {
-  max-width: 100%;
+.mermaid-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mermaid-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.mermaid-ctl {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.mermaid-ctl:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.mermaid-ctl-text {
+  font-size: 12.5px;
+}
+.mermaid-zoom-level {
+  min-width: 46px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.mermaid-viewport {
+  position: relative;
+  height: 440px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: grab;
+  touch-action: none;
+}
+.mermaid-viewport.grabbing {
+  cursor: grabbing;
+}
+.mermaid-transform {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.mermaid-transform svg {
+  display: block;
+  max-width: none;
   height: auto;
+}
+.mermaid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(20, 22, 34, 0.55);
+  display: flex;
+  padding: 24px;
+}
+.mermaid-stage.fullscreen {
+  flex: 1;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+.mermaid-stage.fullscreen .mermaid-viewport {
+  height: calc(100vh - 48px - 38px - 24px);
 }
 .mermaid-loading {
   color: var(--text-muted);
