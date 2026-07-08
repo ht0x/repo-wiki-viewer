@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Mermaid as MermaidApi } from "mermaid";
 
 let mermaidPromise: Promise<MermaidApi> | null = null;
@@ -46,18 +40,13 @@ function clampScale(value: number): number {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
 }
 
-interface ViewportProps {
+interface PanZoomProps {
   svg: string;
-  fullscreen: boolean;
-  onToggleFullscreen: () => void;
 }
 
-function DiagramViewport({
-  svg,
-  fullscreen,
-  onToggleFullscreen,
-}: ViewportProps) {
+function PanZoomViewport({ svg }: PanZoomProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const transformRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState<Transform>(IDENTITY);
   const dragRef = useRef<{
     pointerId: number;
@@ -71,6 +60,15 @@ function DiagramViewport({
   const reset = useCallback(() => setTransform(IDENTITY), []);
 
   useEffect(() => {
+    const svgEl = transformRef.current?.querySelector("svg");
+    if (svgEl) {
+      const vb = svgEl.viewBox?.baseVal;
+      const w = vb && vb.width ? vb.width : svgEl.getBoundingClientRect().width;
+      const h = vb && vb.height ? vb.height : svgEl.getBoundingClientRect().height;
+      svgEl.style.maxWidth = "none";
+      svgEl.style.width = `${w}px`;
+      svgEl.style.height = `${h}px`;
+    }
     reset();
   }, [svg, reset]);
 
@@ -138,57 +136,18 @@ function DiagramViewport({
     setDragging(false);
   }, []);
 
-  const zoomButton = useCallback(
-    (factor: number) => {
-      const el = viewportRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      zoomAt(factor, rect.left + rect.width / 2, rect.top + rect.height / 2);
-    },
-    [zoomAt],
-  );
-
   return (
-    <div className={fullscreen ? "mermaid-stage fullscreen" : "mermaid-stage"}>
-      <div className="mermaid-controls">
-        <button
-          type="button"
-          className="mermaid-ctl"
-          onClick={() => zoomButton(1 / 1.2)}
-          aria-label="Zoom out"
-          title="Zoom out"
-        >
-          &minus;
-        </button>
-        <span className="mermaid-zoom-level">
-          {Math.round(transform.scale * 100)}%
-        </span>
-        <button
-          type="button"
-          className="mermaid-ctl"
-          onClick={() => zoomButton(1.2)}
-          aria-label="Zoom in"
-          title="Zoom in"
-        >
-          +
-        </button>
+    <>
+      <div className="mermaid-controls mermaid-controls-zoom">
+        <span className="mermaid-zoom-hint">Scroll to zoom · drag to pan</span>
         <button
           type="button"
           className="mermaid-ctl mermaid-ctl-text"
           onClick={reset}
-          aria-label="Reset zoom"
-          title="Reset zoom"
+          aria-label="Reset view"
+          title="Reset view"
         >
           Reset
-        </button>
-        <button
-          type="button"
-          className="mermaid-ctl mermaid-ctl-text"
-          onClick={onToggleFullscreen}
-          aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
-          title={fullscreen ? "Exit fullscreen" : "Fullscreen"}
-        >
-          {fullscreen ? "Close" : "⛶ Fullscreen"}
         </button>
       </div>
       <div
@@ -201,6 +160,7 @@ function DiagramViewport({
         onPointerCancel={endDrag}
       >
         <div
+          ref={transformRef}
           className="mermaid-transform"
           style={{
             transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
@@ -208,7 +168,7 @@ function DiagramViewport({
           dangerouslySetInnerHTML={{ __html: svg }}
         />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -222,6 +182,7 @@ export default function Mermaid({ code }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
+  const [panZoom, setPanZoom] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -257,6 +218,10 @@ export default function Mermaid({ code }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [fullscreen]);
 
+  useEffect(() => {
+    if (!fullscreen) setPanZoom(false);
+  }, [fullscreen]);
+
   if (error) {
     return (
       <div className="mermaid-box mermaid-error">
@@ -278,10 +243,20 @@ export default function Mermaid({ code }: Props) {
   return (
     <>
       <div className="mermaid-box">
-        <DiagramViewport
-          svg={svg}
-          fullscreen={false}
-          onToggleFullscreen={() => setFullscreen(true)}
+        <div className="mermaid-controls">
+          <button
+            type="button"
+            className="mermaid-ctl mermaid-ctl-text"
+            onClick={() => setFullscreen(true)}
+            aria-label="Fullscreen"
+            title="Fullscreen"
+          >
+            ⛶ Fullscreen
+          </button>
+        </div>
+        <div
+          className="mermaid-render"
+          dangerouslySetInnerHTML={{ __html: svg }}
         />
       </div>
       {fullscreen && (
@@ -294,11 +269,37 @@ export default function Mermaid({ code }: Props) {
             if (e.target === e.currentTarget) setFullscreen(false);
           }}
         >
-          <DiagramViewport
-            svg={svg}
-            fullscreen
-            onToggleFullscreen={() => setFullscreen(false)}
-          />
+          <div className="mermaid-stage fullscreen">
+            <div className="mermaid-controls">
+              <button
+                type="button"
+                className="mermaid-ctl mermaid-ctl-text"
+                onClick={() => setPanZoom((v) => !v)}
+                aria-pressed={panZoom}
+                aria-label={panZoom ? "Disable pan and zoom" : "Enable pan and zoom"}
+                title={panZoom ? "Disable pan and zoom" : "Enable pan and zoom"}
+              >
+                {panZoom ? "Pan / Zoom: on" : "Pan / Zoom: off"}
+              </button>
+              <button
+                type="button"
+                className="mermaid-ctl mermaid-ctl-text"
+                onClick={() => setFullscreen(false)}
+                aria-label="Exit fullscreen"
+                title="Exit fullscreen"
+              >
+                Close
+              </button>
+            </div>
+            {panZoom ? (
+              <PanZoomViewport svg={svg} />
+            ) : (
+              <div
+                className="mermaid-render fullscreen"
+                dangerouslySetInnerHTML={{ __html: svg }}
+              />
+            )}
+          </div>
         </div>
       )}
     </>
