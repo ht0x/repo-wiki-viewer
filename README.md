@@ -43,7 +43,7 @@ Open Claude Code CLI and run these commands below:
 /reload-plugins
 ```
 
-**Video Instruction**
+**Instruction Video**
 <video controls src="https://github.com/user-attachments/assets/b8346539-427a-4fa0-ac7a-0f9c38ac0977" title="Install the plugin"></video>
 
 ### 2. Generate the documentation
@@ -68,14 +68,14 @@ The skill will generate a complete repository wiki, including:
 
 > **Generating the documentation may take some time, depending on the size of your project.**
 
-**Video Instruction**
+**Instruction Video**
 <video controls src="https://github.com/user-attachments/assets/1cc38867-c6b6-420e-b4fb-bdf37c35d418" title="Generate documentation"></video>
 
 > **Cost Note**
 >
 > The `repo-wiki-standard` skill is designed to reduce token usage on each run by using an incremental generation mechanism that regenerates only the pages affected by source code changes. **This mechanism is only for commited Git repo**.
 >
-> However, even with this optimization, large projects may still consume **millions of input and output tokens** during documentation generation. Consider using more cost-effective LLM providers and models to reduce costs.
+> However, even with this optimization, large projects may still consume **millions of input and output tokens** during documentation generation. Consider choosing LLM providers and models with lower token prices.
 
 ### 3. Open repo-wiki-viewer
 
@@ -89,7 +89,7 @@ You can access it here: **https://ht0x.github.io/repo-wiki-viewer/**
 The documentation, including all Mermaid diagrams, will be rendered directly in your browser.
 All data is processed locally in the browser.
 
-**Video Instruction**
+**Instruction Video**
 <video controls src="https://github.com/user-attachments/assets/ff42b04c-ec34-453e-b0b5-f97367f0bbe9" title="Open repo-wiki-viewer"></video>
 
 ## Features

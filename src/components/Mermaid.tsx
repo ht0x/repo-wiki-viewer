@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Mermaid as MermaidApi } from "mermaid";
+import {
+  MAX_SCALE,
+  MERMAID_THEME_VARIABLES,
+  MIN_SCALE,
+  WHEEL_ZOOM_STEP,
+} from "../lib/mermaidConfig";
 
 let mermaidPromise: Promise<MermaidApi> | null = null;
 
@@ -10,23 +16,12 @@ function loadMermaid(): Promise<MermaidApi> {
       startOnLoad: false,
       securityLevel: "strict",
       theme: "base",
-      themeVariables: {
-        primaryColor: "#eef0fb",
-        primaryBorderColor: "#c7ccf2",
-        primaryTextColor: "#1f2333",
-        lineColor: "#8b8fa3",
-        fontFamily:
-          "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
-        fontSize: "14px",
-      },
+      themeVariables: MERMAID_THEME_VARIABLES,
     });
     return mermaid;
   });
   return mermaidPromise;
 }
-
-const MIN_SCALE = 0.3;
-const MAX_SCALE = 4;
 
 interface Transform {
   scale: number;
@@ -95,7 +90,7 @@ function PanZoomViewport({ svg }: PanZoomProps) {
   const onWheel = useCallback(
     (e: React.WheelEvent) => {
       e.preventDefault();
-      const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+      const factor = e.deltaY < 0 ? WHEEL_ZOOM_STEP : 1 / WHEEL_ZOOM_STEP;
       zoomAt(factor, e.clientX, e.clientY);
     },
     [zoomAt],
