@@ -331,6 +331,7 @@ export default function App() {
       <div className="body">
         <Sidebar
           tree={visibleTree}
+          pages={visiblePages}
           activePath={current}
           onSelect={setCurrent}
           collapsed={!sidebarOpen}
